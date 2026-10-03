@@ -13,8 +13,13 @@ jobs:
           ls -la
       - name: Fix setProgress bug
         run: |
-          find . -name "*.java" -type f -exec sed -i 's/setProgress/updateProgress/g' {} \;
-          echo "All fixed"
+          find . -name "*.java" -type f -exec sed -i 's/updateProgressTintList/setProgressTintList/g' {} \;
+          find . -name "*.java" -type f -exec sed -i '[STRIPPED 66 bytes]' {} \;
+          find . -name "*.java" -type f -exec sed -i 's/private void setProgress/private void updateAppProgress/g' {} \;
+          find . -name "*.java" -type f -exec sed -i 's/private void updateProgress/private void updateAppProgress/g' {} \;
+          find . -name "*.java" -type f -exec sed -i 's/^[[:space:]]*setProgress(/  updateAppProgress(/g' {} \;
+          find . -name "*.java" -type f -exec sed -i 's/^[[:space:]]*updateProgress(/  updateAppProgress(/g' {} \;
+          echo "Fixed correctly"
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
