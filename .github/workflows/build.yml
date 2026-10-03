@@ -11,6 +11,15 @@ jobs:
           unzip -o template.zip || true
           rm -f app.zip template.zip
           ls -la
+      - name: Fix setProgress bug
+        run: |
+          FILE=$(find . -name "MainActivity.java" | head -n 1)
+          echo "Fixing $FILE"
+          sed -i 's/private void setProgress/private void updateProgress/g' "$FILE"
+          sed -i 's/void setProgress/void updateProgress/g' "$FILE"
+          sed -i 's/this.setProgress(/this.updateProgress(/g' "$FILE"
+          sed -i 's/ setProgress(/ updateProgress(/g' "$FILE"
+          grep -n "updateProgress\|setProgress" "$FILE" | tail -n 20
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
