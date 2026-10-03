@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Unzip
+      - name: Unzip files
         run: |
           unzip -o app.zip || true
           unzip -o template.zip || true
@@ -13,13 +13,8 @@ jobs:
           ls -la
       - name: Fix setProgress bug
         run: |
-          FILE=$(find . -name "MainActivity.java" | head -n 1)
-          echo "Fixing $FILE"
-          sed -i 's/private void setProgress/private void updateProgress/g' "$FILE"
-          sed -i 's/void setProgress/void updateProgress/g' "$FILE"
-          sed -i 's/this.setProgress(/this.updateProgress(/g' "$FILE"
-          sed -i 's/ setProgress(/ updateProgress(/g' "$FILE"
-          grep -n "updateProgress\|setProgress" "$FILE" | tail -n 20
+          find . -name "*.java" -type f -exec sed -i 's/setProgress/updateProgress/g' {} \;
+          echo "All fixed"
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -27,7 +22,7 @@ jobs:
       - uses: gradle/gradle-build-action@v2
         with:
           gradle-version: 8.5
-      - name: Build
+      - name: Build Debug APK
         run: |
           chmod +x gradlew || true
           if [ -f "./gradlew" ]; then ./gradlew assembleDebug; else gradle assembleDebug; fi
