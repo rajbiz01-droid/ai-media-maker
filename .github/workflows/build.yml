@@ -5,24 +5,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Unzip folders
+      - name: Unzip
         run: |
-          unzip -o app.zip
-          unzip -o template.zip
+          unzip -o app.zip || true
+          unzip -o template.zip || true
+          rm -f app.zip template.zip
           ls -la
       - uses: actions/setup-java@v4
         with:
+          distribution: temurin
           java-version: '17'
-          distribution: 'temurin'
-      - uses: android-actions/setup-android@v3
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+      - uses: gradle/gradle-build-action@v2
         with:
           gradle-version: 8.5
-      - name: Build Debug APK
-        run: gradle assembleDebug
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - name: Build
+        run: |
+          chmod +x gradlew || true
+          if [ -f "./gradlew" ]; then ./gradlew assembleDebug; else gradle assembleDebug; fi
+      - uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/debug/*.apk
